@@ -1,0 +1,17 @@
+# ──────────────────────────────────────────────
+# AI Virtual Fence — Python Dependencies
+# ──────────────────────────────────────────────
+
+# Core
+opencv-python>=4.8.0
+numpy>=1.24.0
+ultralytics>=8.1.0      # YOLOv8
+
+# Web dashboard
+flask>=3.0.0
+
+# Notifications (optional — install as needed)
+requests>=2.31.0         # Telegram Bot API
+
+# Utilities
+Pillow>=10.0.0
