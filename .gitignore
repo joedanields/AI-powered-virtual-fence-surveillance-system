@@ -1,0 +1,27 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.env/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Data & evidence (generated at runtime)
+data/
+evidence/
+logs/
+boundaries/
+models/*.pt
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Notebooks
+*.ipynb_checkpoints/
