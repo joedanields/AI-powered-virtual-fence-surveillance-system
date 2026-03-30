@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Event #{{ event.event_id }} — Virtual Fence{% endblock %}
+{% block content %}
+
+<div class="card">
+    <h2>Intrusion Event #{{ event.event_id }}</h2>
+
+    <table>
+        <tr><th style="width:160px;">Timestamp</th><td>{{ event.timestamp }}</td></tr>
+        <tr><th>Camera ID</th><td>{{ event.camera_id }}</td></tr>
+        <tr><th>Zone</th><td>{{ event.zone_name }}</td></tr>
+        <tr><th>Persons Detected</th><td>{{ event.num_persons }}</td></tr>
+        <tr>
+            <th>Status</th>
+            <td>
+                {% if event.status == 'new' %}
+                    <span class="badge badge-new">New</span>
+                    <button onclick="acknowledge({{ event.event_id }})"
+                            style="margin-left:0.5rem; padding:0.3rem 0.7rem; border:none;
+                                   background:var(--success); color:white; border-radius:4px;
+                                   cursor:pointer;">
+                        Mark Acknowledged
+                    </button>
+                {% else %}
+                    <span class="badge badge-ack">{{ event.status }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% if event.notes %}
+        <tr><th>Notes</th><td>{{ event.notes }}</td></tr>
+        {% endif %}
+    </table>
+</div>
+
+{% if event.screenshot_path %}
+<div class="card">
+    <h2>Evidence Screenshot</h2>
+    {% set filename = event.screenshot_path.split('/')[-1].split('\\')[-1] %}
+    <img src="/evidence/{{ filename }}" alt="Intrusion Screenshot" class="screenshot">
+</div>
+{% endif %}
+
+<div style="margin-top:1rem;">
+    <a href="/events" class="btn btn-primary">← Back to Events</a>
+</div>
+
+<script>
+function acknowledge(eventId) {
+    fetch(`/api/events/${eventId}/acknowledge`, { method: 'POST' })
+        .then(r => r.json())
+        .then(d => { if (d.success) location.reload(); });
+}
+</script>
+
+{% endblock %}

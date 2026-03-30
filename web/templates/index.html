@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Virtual Fence{% endblock %}
+{% block content %}
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Intrusions</h3>
+        <div class="value">{{ total_events }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Today</h3>
+        <div class="value">
+            {% set today_count = 0 %}
+            {% for s in daily_stats %}
+                {% if s.date == now.strftime('%Y-%m-%d') %}
+                    {% set today_count = s.count %}
+                {% endif %}
+            {% endfor %}
+            {{ today_count }}
+        </div>
+    </div>
+    <div class="stat-card">
+        <h3>Last 7 Days</h3>
+        <div class="value">{{ daily_stats | sum(attribute='count') }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>System Status</h3>
+        <div class="value" style="color: var(--success);">● Active</div>
+    </div>
+</div>
+
+<!-- 7-day chart -->
+<div class="card">
+    <h2>Intrusions — Last 7 Days</h2>
+    {% if daily_stats %}
+    <div class="chart-bar">
+        {% set max_count = daily_stats | map(attribute='count') | max %}
+        {% for s in daily_stats | reverse %}
+        <div class="bar" style="height: {{ (s.count / max_count * 100) if max_count > 0 else 5 }}%">
+            <span>{{ s.date[-5:] }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted);">No data yet.</p>
+    {% endif %}
+</div>
+
+<!-- Recent Events Table -->
+<div class="card">
+    <h2>Recent Intrusion Events</h2>
+    {% if events %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Timestamp</th>
+                <th>Camera</th>
+                <th>Zone</th>
+                <th>Persons</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in events %}
+            <tr>
+                <td>#{{ e.event_id }}</td>
+                <td>{{ e.timestamp }}</td>
+                <td>{{ e.camera_id }}</td>
+                <td>{{ e.zone_name }}</td>
+                <td>{{ e.num_persons }}</td>
+                <td>
+                    {% if e.status == 'new' %}
+                        <span class="badge badge-new">New</span>
+                    {% else %}
+                        <span class="badge badge-ack">{{ e.status }}</span>
+                    {% endif %}
+                </td>
+                <td><a href="/events/{{ e.event_id }}" class="btn btn-primary">View</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="text-align:center; margin-top:1rem;">
+        <a href="/events" class="btn btn-primary">View All Events →</a>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted);">No intrusion events recorded yet.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
